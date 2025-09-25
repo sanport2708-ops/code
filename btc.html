@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crypto Investment Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #181c23; color: #f5f5f5; margin: 0; }
+        header { background: #23272f; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        header h1 { margin: 0; font-size: 2rem; }
+        nav a { color: #f5f5f5; margin-left: 2rem; text-decoration: none; font-weight: 500; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 900px; margin: 2rem auto; background: #23272f; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 24px #0003; }
+        h2 { color: #ffd700; }
+        .investment-form { display: flex; flex-wrap: wrap; gap: 2rem; }
+        .investment-form > div { flex: 1 1 250px; }
+        label { display: block; margin-bottom: 0.5rem; }
+        input, select { width: 100%; padding: 0.5rem; border-radius: 6px; border: none; margin-bottom: 1rem; }
+        button { background: #ffd700; color: #23272f; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+        button:hover { background: #e6c200; }
+        .plans { display: flex; gap: 2rem; margin: 2rem 0; }
+        .plan { background: #181c23; border-radius: 8px; padding: 1.5rem; flex: 1 1 200px; border: 2px solid #ffd70033; }
+        .plan h3 { margin-top: 0; color: #ffd700; }
+        .plan ul { padding-left: 1.2rem; }
+        .summary { margin-top: 2rem; background: #181c23; padding: 1rem; border-radius: 8px; }
+        .transactions { margin-top: 2rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid #333; }
+        th { background: #23272f; }
+        @media (max-width: 700px) {
+            .plans { flex-direction: column; }
+            .investment-form { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CryptoInvest</h1>
+        <nav>
+            <a href="#plans">Plans</a>
+            <a href="#invest">Invest</a>
+            <a href="#transactions">Transactions</a>
+        </nav>
+    </header>
+    <div class="container">
+        <section id="plans">
+            <h2>Investment Plans</h2>
+            <div class="plans">
+                <div class="plan">
+                    <h3>Starter</h3>
+                    <ul>
+                        <li>Min: $100</li>
+                        <li>Max: $999</li>
+                        <li>Daily ROI: 1.5%</li>
+                        <li>Duration: 30 days</li>
+                    </ul>
+                </div>
+                <div class="plan">
+                    <h3>Pro</h3>
+                    <ul>
+                        <li>Min: $1,000</li>
+                        <li>Max: $9,999</li>
+                        <li>Daily ROI: 2.0%</li>
+                        <li>Duration: 60 days</li>
+                    </ul>
+                </div>
+                <div class="plan">
+                    <h3>Elite</h3>
+                    <ul>
+                        <li>Min: $10,000</li>
+                        <li>Max: $100,000</li>
+                        <li>Daily ROI: 2.5%</li>
+                        <li>Duration: 90 days</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section id="invest">
+            <h2>Invest Now</h2>
+            <form class="investment-form" id="investmentForm">
+                <div>
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div>
+                    <label for="plan">Select Plan</label>
+                    <select id="plan" required>
+                        <option value="">-- Choose Plan --</option>
+                        <option value="starter">Starter</option>
+                        <option value="pro">Pro</option>
+                        <option value="elite">Elite</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="amount">Investment Amount (USD)</label>
+                    <input type="number" id="amount" min="100" required>
+                </div>
+                <div style="align-self: flex-end;">
+                    <button type="submit">Invest</button>
+                </div>
+            </form>
+            <div class="summary" id="summary" style="display:none;"></div>
+        </section>
+        <section id="transactions" class="transactions">
+            <h2>Recent Investments</h2>
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Plan</th>
+                        <th>Amount</th>
+                        <th>ROI</th>
+                        <th>Duration</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Transactions will appear here -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <script>
+        const plans = {
+            starter: { min: 100, max: 999, roi: 1.5, duration: 30 },
+            pro: { min: 1000, max: 9999, roi: 2.0, duration: 60 },
+            elite: { min: 10000, max: 100000, roi: 2.5, duration: 90 }
+        };
+
+        const form = document.getElementById('investmentForm');
+        const summary = document.getElementById('summary');
+        const transactionsTable = document.getElementById('transactionsTable').querySelector('tbody');
+
+        function formatDate(date) {
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function addTransaction(data) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${data.name}</td>
+                <td>${data.planName}</td>
+                <td>$${data.amount.toLocaleString()}</td>
+                <td>${data.roi}%</td>
+                <td>${data.duration} days</td>
+                <td>${formatDate(new Date(data.date))}</td>
+            `;
+            transactionsTable.prepend(tr);
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const planKey = document.getElementById('plan').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!plans[planKey]) {
+                alert('Please select a valid plan.');
+                return;
+            }
+            const plan = plans[planKey];
+            if (amount < plan.min || amount > plan.max) {
+                alert(`Amount must be between $${plan.min} and $${plan.max} for the selected plan.`);
+                return;
+            }
+
+            const totalReturn = amount * (1 + (plan.roi / 100) * plan.duration);
+            summary.style.display = 'block';
+            summary.innerHTML = `
+                <strong>Investment Summary:</strong><br>
+                Name: ${name}<br>
+                Email: ${email}<br>
+                Plan: ${planKey.charAt(0).toUpperCase() + planKey.slice(1)}<br>
+                Amount: $${amount.toLocaleString()}<br>
+                Daily ROI: ${plan.roi}%<br>
+                Duration: ${plan.duration} days<br>
+                <strong>Expected Return: $${totalReturn.toLocaleString(undefined, {maximumFractionDigits:2})}</strong>
+            `;
+
+            addTransaction({
+                name,
+                planName: planKey.charAt(0).toUpperCase() + planKey.slice(1),
+                amount,
+                roi: plan.roi,
+                duration: plan.duration,
+                date: new Date()
+            });
+
+            form.reset();
+        });
+    </script>
+</body>
+</html>
